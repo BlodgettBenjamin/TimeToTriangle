@@ -158,7 +158,9 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\opengltriangle.cpp" />
+    <ClCompile Include="src\openglwindow.cpp" />
     <ClCompile Include="src\vulkansetup.cpp" />
+    <ClCompile Include="src\vulkanwindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

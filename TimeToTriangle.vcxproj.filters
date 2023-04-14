@@ -27,5 +27,11 @@
     <ClCompile Include="src\vulkansetup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\openglwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vulkanwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
