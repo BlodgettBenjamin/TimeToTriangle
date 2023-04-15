@@ -198,6 +198,12 @@ int main()
 		return -1;
 	}
 
+	struct queue_family_indices
+	{
+		u32 graphics_family = nullval;
+	};
+	queue_family_indices indices;
+
 	std::vector<VkPhysicalDevice> devices(device_count);
 	vkEnumeratePhysicalDevices(vulkan_instance, &device_count, devices.data());
 	for (const auto& device : devices)
@@ -210,12 +216,6 @@ int main()
 
 		std::cout << device_properties.deviceName << std::endl;
 
-		struct queue_family_indices
-		{
-			u32 graphics_family = nullval;
-		};
-
-		queue_family_indices indices;
 		u32 queue_family_count = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, nullptr);
 
@@ -239,12 +239,60 @@ int main()
 			break;
 		}
 	}
-
 	if (physical_device == VK_NULL_HANDLE)
 	{
 		std::cout << "failed to find a suitable GPU!" << std::endl;
 		return -1;
 	}
+	if (indices.graphics_family == nullval)
+	{
+		std::cout << "graphics family uninitialized!" << std::endl;
+		return -1;
+	}
+
+	VkDevice device;
+	
+	VkDeviceQueueCreateInfo queue_specification{};
+	queue_specification.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queue_specification.queueFamilyIndex = indices.graphics_family;
+	queue_specification.queueCount = 1;
+
+	float queue_priority = 1.0f;
+	queue_specification.pQueuePriorities = &queue_priority;
+
+	VkPhysicalDeviceFeatures device_features{};
+
+	VkDeviceCreateInfo device_specification{};
+	device_specification.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	device_specification.pQueueCreateInfos = &queue_specification;
+	device_specification.queueCreateInfoCount = 1;
+	device_specification.pEnabledFeatures = &device_features;
+	device_specification.enabledExtensionCount = 0;
+
+	if (validation_layers_enabled)
+	{
+		device_specification.enabledLayerCount = (u32)validation_layers.size();
+		device_specification.ppEnabledLayerNames = validation_layers.data();
+	}
+	else
+	{
+		device_specification.enabledLayerCount = 0;
+	}
+
+	if (vkCreateDevice(physical_device, &device_specification, nullptr, &device) != VK_SUCCESS)
+	{
+		std::cout << "failed to create logical device!" << std::endl;
+		return -1;
+	}
+
+	VkQueue graphics_queue;
+
+	vkGetDeviceQueue(device, indices.graphics_family, 0, &graphics_queue);
+
+
+
+
+
 
 
 
@@ -271,6 +319,7 @@ int main()
 		}
 	}
 
+	vkDestroyDevice(device, nullptr);
 	vkDestroyInstance(vulkan_instance, nullptr);
 
 	glfwDestroyWindow(window);
