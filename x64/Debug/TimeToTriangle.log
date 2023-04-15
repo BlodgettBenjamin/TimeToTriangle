@@ -1,7 +1,13 @@
-﻿  main.cpp
-E:\TimeToTriangle\src\main.cpp(81,20): warning C4018: '<': signed/unsigned mismatch
-E:\TimeToTriangle\src\main.cpp(123,20): warning C4018: '<': signed/unsigned mismatch
-  LINK : E:\TimeToTriangle\x64\Debug\TimeToTriangle.exe not found or not built by the last incremental link; performing full link
+﻿  glad.c
+  main.cpp
+E:\TimeToTriangle\src\main.cpp(82,20): warning C4018: '<': signed/unsigned mismatch
+E:\TimeToTriangle\src\main.cpp(124,20): warning C4018: '<': signed/unsigned mismatch
+  opengltriangle.cpp
+  opengltutorialtriangle.cpp
+  openglwindow.cpp
+  vulkansetup.cpp
+  vulkanwindow.cpp
+  Generating Code...
 glfw3.lib(init.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(init.obj)' or at ''; linking object as if no debug info
 glfw3.lib(window.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(window.obj)' or at ''; linking object as if no debug info
 glfw3.lib(input.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(input.obj)' or at ''; linking object as if no debug info

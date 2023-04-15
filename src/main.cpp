@@ -9,6 +9,7 @@
 #include <vector>
 
 typedef uint32_t u32;
+constexpr u32 nullval = 4294967295;
 
 void process_input(GLFWwindow* window);
 
@@ -207,7 +208,32 @@ int main()
 		VkPhysicalDeviceFeatures device_features;
 		vkGetPhysicalDeviceFeatures(device, &device_features);
 
-		if (true)
+		std::cout << device_properties.deviceName << std::endl;
+
+		struct queue_family_indices
+		{
+			u32 graphics_family = nullval;
+		};
+
+		queue_family_indices indices;
+		u32 queue_family_count = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, nullptr);
+
+		std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
+		vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, queue_families.data());
+
+		int i = 0;
+		for (const auto& family : queue_families)
+		{
+			if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			{
+				indices.graphics_family = i;
+			}
+
+			i++;
+		}
+
+		if (indices.graphics_family != nullval)
 		{
 			physical_device = device;
 			break;
@@ -219,8 +245,6 @@ int main()
 		std::cout << "failed to find a suitable GPU!" << std::endl;
 		return -1;
 	}
-
-
 
 
 
