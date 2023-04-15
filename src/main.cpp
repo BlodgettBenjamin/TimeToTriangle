@@ -163,9 +163,9 @@ int main()
 		return -1;
 	}
 
+	VkDebugUtilsMessengerEXT debug_messenger;
 	if (validation_layers_enabled)
 	{
-		VkDebugUtilsMessengerEXT debug_messenger;
 		VkDebugUtilsMessengerCreateInfoEXT debug_messenger_specification{};
 		debug_messenger_specification.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 		debug_messenger_specification.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -197,6 +197,18 @@ int main()
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+	}
+
+	if (validation_layers_enabled)
+	{
+		auto vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(vulkan_instance, "vkDestroyDebugUtilsMessengerEXT");
+		if (vkDestroyDebugUtilsMessengerEXT) {
+			vkDestroyDebugUtilsMessengerEXT(vulkan_instance, debug_messenger, nullptr);
+		}
+		else {
+			std::cout << "failed to set up clean up messenger object!" << std::endl;
+			return -1;
+		}
 	}
 
 	vkDestroyInstance(vulkan_instance, nullptr);
