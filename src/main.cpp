@@ -187,6 +187,38 @@ int main()
 		}
 	}
 
+	VkPhysicalDevice physical_device = VK_NULL_HANDLE;
+
+	u32 device_count = 0;
+	vkEnumeratePhysicalDevices(vulkan_instance, &device_count, nullptr);
+	if (device_count < 1)
+	{
+		std::cout << "could not find GPU with Vulkan support!" << std::endl;
+		return -1;
+	}
+
+	std::vector<VkPhysicalDevice> devices(device_count);
+	vkEnumeratePhysicalDevices(vulkan_instance, &device_count, devices.data());
+	for (const auto& device : devices)
+	{
+		VkPhysicalDeviceProperties device_properties;
+		vkGetPhysicalDeviceProperties(device, &device_properties);
+
+		VkPhysicalDeviceFeatures device_features;
+		vkGetPhysicalDeviceFeatures(device, &device_features);
+
+		if (true)
+		{
+			physical_device = device;
+			break;
+		}
+	}
+
+	if (physical_device == VK_NULL_HANDLE)
+	{
+		std::cout << "failed to find a suitable GPU!" << std::endl;
+		return -1;
+	}
 
 
 
