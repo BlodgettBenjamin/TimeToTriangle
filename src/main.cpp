@@ -86,14 +86,25 @@ int main()
 	instance_specification.enabledExtensionCount = (u32)required_extensions.size();
 	instance_specification.ppEnabledExtensionNames = required_extensions.data();
 
+
+	VkDebugUtilsMessengerCreateInfoEXT debug_messenger_specification{};
 	if (validation_layers_enabled)
 	{
 		instance_specification.enabledLayerCount = (u32)validation_layers.size();
 		instance_specification.ppEnabledLayerNames = validation_layers.data();
+
+		debug_messenger_specification.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+		debug_messenger_specification.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+		debug_messenger_specification.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+		debug_messenger_specification.pfnUserCallback = debug_message_callback;
+		debug_messenger_specification.pUserData = nullptr;
+
+		instance_specification.pNext = &debug_messenger_specification;
 	}
 	else
 	{
 		instance_specification.enabledLayerCount = 0;
+		instance_specification.pNext = nullptr;
 	}
 
 	u32 extension_count = 0;
@@ -166,13 +177,6 @@ int main()
 	VkDebugUtilsMessengerEXT debug_messenger;
 	if (validation_layers_enabled)
 	{
-		VkDebugUtilsMessengerCreateInfoEXT debug_messenger_specification{};
-		debug_messenger_specification.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-		debug_messenger_specification.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-		debug_messenger_specification.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-		debug_messenger_specification.pfnUserCallback = debug_message_callback;
-		debug_messenger_specification.pUserData = nullptr;
-
 		auto vkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(vulkan_instance, "vkCreateDebugUtilsMessengerEXT");
 		if (vkCreateDebugUtilsMessengerEXT) {
 			vkCreateDebugUtilsMessengerEXT(vulkan_instance, &debug_messenger_specification, nullptr, &debug_messenger);
