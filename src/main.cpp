@@ -226,6 +226,7 @@ int main()
 	struct queue_family_indices
 	{
 		u32 graphics_family = nullval;
+		u32 present_family = nullval;
 	};
 	queue_family_indices indices;
 
@@ -247,12 +248,22 @@ int main()
 		std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, queue_families.data());
 
+		std::cout << "queue family count: " << queue_family_count << std::endl;
+
 		int i = 0;
 		for (const auto& family : queue_families)
 		{
 			if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			{
 				indices.graphics_family = i;
+			}
+
+			VkBool32 present_support = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &present_support);
+
+			if (present_support)
+			{
+				indices.present_family = i;
 			}
 
 			i++;
