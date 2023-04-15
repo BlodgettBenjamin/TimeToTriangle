@@ -158,6 +158,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\opengltriangle.cpp" />
+    <ClCompile Include="src\opengltutorialtriangle.cpp" />
     <ClCompile Include="src\openglwindow.cpp" />
     <ClCompile Include="src\vulkansetup.cpp" />
     <ClCompile Include="src\vulkanwindow.cpp" />
