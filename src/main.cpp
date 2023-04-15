@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <vector>
+#include <set>
 
 typedef uint32_t u32;
 constexpr u32 nullval = 4294967295;
@@ -266,6 +267,11 @@ int main()
 				indices.present_family = i;
 			}
 
+			if (indices.graphics_family != nullval && indices.present_family != nullval)
+			{
+				break;
+			}
+
 			i++;
 		}
 
@@ -285,23 +291,33 @@ int main()
 		std::cout << "graphics family uninitialized!" << std::endl;
 		return -1;
 	}
-
+	if (indices.present_family == nullval)
+	{
+		std::cout << "graphics family uninitialized!" << std::endl;
+		return -1;
+	}
 	VkDevice device;
-	
-	VkDeviceQueueCreateInfo queue_specification{};
-	queue_specification.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queue_specification.queueFamilyIndex = indices.graphics_family;
-	queue_specification.queueCount = 1;
+
+	std::vector<VkDeviceQueueCreateInfo> queue_specification_vector;
+	std::set<u32> unique_queue_families = { indices.graphics_family, indices.present_family };
 
 	float queue_priority = 1.0f;
-	queue_specification.pQueuePriorities = &queue_priority;
+	for (u32 queue_family : unique_queue_families)
+	{
+		VkDeviceQueueCreateInfo queue_specification{};
+		queue_specification.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queue_specification.queueFamilyIndex = indices.graphics_family;
+		queue_specification.queueCount = 1;
+		queue_specification.pQueuePriorities = &queue_priority;
+		queue_specification_vector.push_back(queue_specification);
+	}
 
 	VkPhysicalDeviceFeatures device_features{};
 
 	VkDeviceCreateInfo device_specification{};
 	device_specification.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	device_specification.pQueueCreateInfos = &queue_specification;
-	device_specification.queueCreateInfoCount = 1;
+	device_specification.queueCreateInfoCount = (u32)queue_specification_vector.size();
+	device_specification.pQueueCreateInfos = queue_specification_vector.data();
 	device_specification.pEnabledFeatures = &device_features;
 	device_specification.enabledExtensionCount = 0;
 
@@ -322,10 +338,10 @@ int main()
 	}
 
 	VkQueue graphics_queue;
+	VkQueue present_queue;
 
 	vkGetDeviceQueue(device, indices.graphics_family, 0, &graphics_queue);
-
-
+	vkGetDeviceQueue(device, indices.present_family, 0, &present_queue);
 
 
 
