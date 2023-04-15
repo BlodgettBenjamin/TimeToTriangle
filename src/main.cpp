@@ -1,6 +1,8 @@
-#include <glad/glad.h>
+#define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 
 #include <stdint.h>
 #include <iostream>
@@ -188,6 +190,29 @@ int main()
 		}
 	}
 
+	VkSurfaceKHR surface;
+#if 0
+
+	VkWin32SurfaceCreateInfoKHR surface_specification{};
+	surface_specification.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	surface_specification.hwnd = glfwGetWin32Window(window);
+	surface_specification.hinstance = GetModuleHandle(nullptr);
+
+	if (vkCreateWin32SurfaceKHR(vulkan_instance, &surface_specification, nullptr, &surface) != VK_SUCCESS)
+	{
+		std::cout << "failed to create window surface!" << std::endl;
+		return -1;
+	}
+#else
+	if (glfwCreateWindowSurface(vulkan_instance, window, nullptr, &surface) != VK_SUCCESS)
+	{
+		std::cout << "failed to create window surface!" << std::endl;
+		return -1;
+	}
+#endif
+
+
+
 	VkPhysicalDevice physical_device = VK_NULL_HANDLE;
 
 	u32 device_count = 0;
@@ -295,8 +320,6 @@ int main()
 
 
 
-
-
 	while (!glfwWindowShouldClose(window))
 	{
 		process_input(window);
@@ -320,6 +343,7 @@ int main()
 	}
 
 	vkDestroyDevice(device, nullptr);
+	vkDestroySurfaceKHR(vulkan_instance, surface, nullptr);
 	vkDestroyInstance(vulkan_instance, nullptr);
 
 	glfwDestroyWindow(window);
