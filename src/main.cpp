@@ -23,6 +23,10 @@ const std::vector<const char*> validation_layers = {
 	"VK_LAYER_KHRONOS_validation"
 };
 
+const std::vector<const char*> device_extensions = {
+	VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
 #ifdef NDEBUG
 const bool validation_layers_enabled = false;
 #else
@@ -186,7 +190,7 @@ int main()
 			vkCreateDebugUtilsMessengerEXT(vulkan_instance, &debug_messenger_specification, nullptr, &debug_messenger);
 		}
 		else {
-			std::cout << "failed to set up debug messenger!" << std::endl;
+			std::cout << "vkCreateDebugUtilsMessengerEXT could not be loaded!" << std::endl;
 			return -1;
 		}
 	}
@@ -235,14 +239,6 @@ int main()
 	vkEnumeratePhysicalDevices(vulkan_instance, &device_count, devices.data());
 	for (const auto& device : devices)
 	{
-		VkPhysicalDeviceProperties device_properties;
-		vkGetPhysicalDeviceProperties(device, &device_properties);
-
-		VkPhysicalDeviceFeatures device_features;
-		vkGetPhysicalDeviceFeatures(device, &device_features);
-
-		std::cout << device_properties.deviceName << std::endl;
-
 		u32 queue_family_count = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, nullptr);
 
@@ -281,10 +277,30 @@ int main()
 			break;
 		}
 	}
-	if (physical_device == VK_NULL_HANDLE)
+
+	u32 extension_count_set;
+	vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extension_count_set, nullptr);
+
+	std::vector<VkExtensionProperties> available_extensions_set(extension_count_set);
+	vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extension_count_set, available_extensions_set.data());
+
+	std::set<std::string> required_extensions_set(device_extensions.begin(), device_extensions.end());
+
+	for (const auto& extension : available_extensions_set)
+	{
+		required_extensions_set.erase(extension.extensionName);
+	}
+
+	if (physical_device == VK_NULL_HANDLE || !required_extensions_set.empty())
 	{
 		std::cout << "failed to find a suitable GPU!" << std::endl;
 		return -1;
+	}
+	else
+	{
+		VkPhysicalDeviceProperties device_properties;
+		vkGetPhysicalDeviceProperties(physical_device, &device_properties);
+		std::cout << "GPU: " << device_properties.deviceName << std::endl;
 	}
 	if (indices.graphics_family == nullval)
 	{
@@ -364,7 +380,7 @@ int main()
 			vkDestroyDebugUtilsMessengerEXT(vulkan_instance, debug_messenger, nullptr);
 		}
 		else {
-			std::cout << "failed to set up clean up messenger object!" << std::endl;
+			std::cout << "vkDestroyDebugUtilsMessengerEXT could not be loaded!" << std::endl;
 			return -1;
 		}
 	}
