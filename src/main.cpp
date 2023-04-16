@@ -11,6 +11,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <fstream>
 
 typedef uint32_t u32;
 constexpr u32 nullval = 4294967295;
@@ -529,6 +530,29 @@ int main()
 		}
 	}
 
+	std::ifstream vert_file("shaders/vert.spv", std::ios::ate | std::ios::binary);
+	if (!vert_file.is_open())
+	{
+		std::cout << "failed to open vertex shader file!" << std::endl;
+		return -1;
+	}
+	size_t vert_file_size = (size_t)vert_file.tellg();
+	std::vector<char> vert_file_buffer(vert_file_size);
+	vert_file.seekg(0);
+	vert_file.read(vert_file_buffer.data(), vert_file_size);
+	vert_file.close();
+
+	std::ifstream frag_file("shaders/frag.spv", std::ios::ate | std::ios::binary);
+	if (!frag_file.is_open())
+	{
+		std::cout << "failed to open fragment shader file!" << std::endl;
+		return -1;
+	}
+	size_t frag_file_size = (size_t)frag_file.tellg();
+	std::vector<char> frag_file_buffer(frag_file_size);
+	frag_file.seekg(0);
+	frag_file.read(frag_file_buffer.data(), frag_file_size);
+	frag_file.close();
 
 
 
