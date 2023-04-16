@@ -297,6 +297,42 @@ int main()
 
 
 
+	VkSwapchainKHR swap_chain;
+	std::vector<VkImage> swap_chain_images;
+	VkFormat swap_chain_image_format;
+	VkExtent2D swap_chain_extent;
+
+	if (vkCreateSwapchainKHR(device, &swap_chain_specification, nullptr, &swap_chain) != VK_SUCCESS)
+	{
+		std::cout << "failed to create swap chain!" << std::endl;
+		return -1;
+	}
+
+	vkGetSwapchainImagesKHR(device, swap_chain, &image_count, nullptr);
+	swap_chain_images.resize(image_count);
+	vkGetSwapchainImagesKHR(device, swap_chain, &image_count, swap_chain_images.data());
+
+	swap_chain_image_format = preferred_format.format;
+	swap_chain_extent = preferred_swap_extent;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	while (!glfwWindowShouldClose(window))
 	{
 		process_input(window);
@@ -319,6 +355,7 @@ int main()
 		}
 	}
 
+	vkDestroySwapchainKHR(device, swap_chain, nullptr);
 	vkDestroyDevice(device, nullptr);
 	vkDestroyInstance(vulkan_instance, nullptr);
 

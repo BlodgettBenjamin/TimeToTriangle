@@ -1,4 +1,30 @@
 ﻿  main.cpp
 E:\TimeToTriangle\src\main.cpp(82,20): warning C4018: '<': signed/unsigned mismatch
 E:\TimeToTriangle\src\main.cpp(124,20): warning C4018: '<': signed/unsigned mismatch
-  TimeToTriangle.vcxproj -> E:\TimeToTriangle\x64\Debug\TimeToTriangle.exe
+E:\TimeToTriangle\src\main.cpp(291,35): error C2039: 'present_family': is not a member of 'main::queue_family_indices'
+E:\TimeToTriangle\src\main.cpp(201,9): message : see declaration of 'main::queue_family_indices'
+E:\TimeToTriangle\src\main.cpp(291,55): error C2065: 'present_queue': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(294,6): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(296,27): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(308,30): error C2039: 'clamp': is not a member of 'std'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\vector(24,1): message : see declaration of 'std'
+E:\TimeToTriangle\src\main.cpp(308,57): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(308,111): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(308,35): error C3861: 'clamp': identifier not found
+E:\TimeToTriangle\src\main.cpp(309,31): error C2039: 'clamp': is not a member of 'std'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\vector(24,1): message : see declaration of 'std'
+E:\TimeToTriangle\src\main.cpp(309,59): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(309,114): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(309,36): error C3861: 'clamp': identifier not found
+E:\TimeToTriangle\src\main.cpp(314,20): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(316,6): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(316,73): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(317,17): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(321,37): error C2065: 'surface': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(323,41): error C2065: 'preferred_format': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(324,45): error C2065: 'preferred_format': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(329,41): error C2039: 'present_family': is not a member of 'main::queue_family_indices'
+E:\TimeToTriangle\src\main.cpp(201,9): message : see declaration of 'main::queue_family_indices'
+E:\TimeToTriangle\src\main.cpp(342,42): error C2065: 'swap_chain_support': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(344,41): error C2065: 'preferred_present_mode': undeclared identifier
+E:\TimeToTriangle\src\main.cpp(363,28): error C2065: 'preferred_format': undeclared identifier
