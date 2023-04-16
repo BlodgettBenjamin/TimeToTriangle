@@ -584,10 +584,19 @@ int main()
 
 	std::cout << "VERTEX/SHADER MODULES SUCCESSFULLY CREATED" << std::endl;
 
+	VkPipelineShaderStageCreateInfo vertex_shader_stage_specification{};
+	vertex_shader_stage_specification.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	vertex_shader_stage_specification.stage = VK_SHADER_STAGE_VERTEX_BIT;
+	vertex_shader_stage_specification.module = vertex_shader_module;
+	vertex_shader_stage_specification.pName = "main";
 
+	VkPipelineShaderStageCreateInfo fragment_shader_stage_specification{};
+	fragment_shader_stage_specification.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	fragment_shader_stage_specification.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+	fragment_shader_stage_specification.module = fragment_shader_module;
+	fragment_shader_stage_specification.pName = "main";
 
-
-
+	VkPipelineShaderStageCreateInfo shader_stages[] = { vertex_shader_stage_specification, fragment_shader_stage_specification };
 
 	vkDestroyShaderModule(device, fragment_shader_module, nullptr);
 	vkDestroyShaderModule(device, vertex_shader_module, nullptr);
