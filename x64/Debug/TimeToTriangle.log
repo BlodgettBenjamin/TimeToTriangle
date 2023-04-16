@@ -1,4 +1,0 @@
-﻿  main.cpp
-E:\TimeToTriangle\src\main.cpp(89,20): warning C4018: '<': signed/unsigned mismatch
-E:\TimeToTriangle\src\main.cpp(131,20): warning C4018: '<': signed/unsigned mismatch
-  TimeToTriangle.vcxproj -> E:\TimeToTriangle\x64\Debug\TimeToTriangle.exe
