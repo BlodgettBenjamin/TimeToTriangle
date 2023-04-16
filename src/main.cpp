@@ -505,17 +505,29 @@ int main()
 	swap_chain_extent = preferred_swap_extent;
 
 
+	std::vector<VkImageView> swap_chain_image_views(swap_chain_images.size());
 
+	for (size_t i = 0; i < swap_chain_images.size(); i++) {
+		VkImageViewCreateInfo image_view_specification{};
+		image_view_specification.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		image_view_specification.image = swap_chain_images[i];
+		image_view_specification.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		image_view_specification.format = swap_chain_image_format;
+		image_view_specification.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+		image_view_specification.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+		image_view_specification.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+		image_view_specification.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+		image_view_specification.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		image_view_specification.subresourceRange.baseMipLevel = 0;
+		image_view_specification.subresourceRange.levelCount = 1;
+		image_view_specification.subresourceRange.baseArrayLayer = 0;
+		image_view_specification.subresourceRange.layerCount = 1;
 
-
-
-
-
-
-
-
-
-
+		if (vkCreateImageView(device, &image_view_specification, nullptr, &swap_chain_image_views[i]) != VK_SUCCESS) {
+			std::cout << "failed to create image views!" << std::endl;
+			return -1;
+		}
+	}
 
 
 
@@ -543,6 +555,9 @@ int main()
 			return -1;
 		}
 	}
+
+	for (auto image_view : swap_chain_image_views)
+		vkDestroyImageView(device, image_view, nullptr);
 
 	vkDestroySwapchainKHR(device, swap_chain, nullptr);
 	vkDestroyDevice(device, nullptr);
