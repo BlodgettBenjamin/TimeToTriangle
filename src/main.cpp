@@ -554,6 +554,44 @@ int main()
 	frag_file.read(frag_file_buffer.data(), frag_file_size);
 	frag_file.close();
 
+	std::cout << "VERTEX/FRAGMENT SHADERS SUCCESSFULLY LOADED: " << std::endl
+		<< "vertex shader file size: " << vert_file_size << std::endl
+		<< "fragment shader file size: " << frag_file_size << std::endl;
+
+	VkShaderModuleCreateInfo fragment_shader_module_specification{};
+	fragment_shader_module_specification.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	fragment_shader_module_specification.codeSize = frag_file_size;
+	fragment_shader_module_specification.pCode = reinterpret_cast<const u32*>(frag_file_buffer.data());
+
+	VkShaderModule fragment_shader_module;
+	if (vkCreateShaderModule(device, &fragment_shader_module_specification, nullptr, &fragment_shader_module) != VK_SUCCESS)
+	{
+		std::cout << "failed to create fragment shader module!" << std::endl;
+		return -1;
+	}
+
+	VkShaderModuleCreateInfo vertex_shader_module_specification{};
+	vertex_shader_module_specification.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	vertex_shader_module_specification.codeSize = vert_file_size;
+	vertex_shader_module_specification.pCode = reinterpret_cast<const u32*>(vert_file_buffer.data());
+
+	VkShaderModule vertex_shader_module;
+	if (vkCreateShaderModule(device, &vertex_shader_module_specification, nullptr, &vertex_shader_module) != VK_SUCCESS)
+	{
+		std::cout << "failed to create vertex shader module!" << std::endl;
+		return -1;
+	}
+
+	std::cout << "VERTEX/SHADER MODULES SUCCESSFULLY CREATED" << std::endl;
+
+
+
+
+
+
+	vkDestroyShaderModule(device, fragment_shader_module, nullptr);
+	vkDestroyShaderModule(device, vertex_shader_module, nullptr);
+
 
 
 
