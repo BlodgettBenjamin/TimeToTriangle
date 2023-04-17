@@ -759,6 +759,31 @@ int main()
 	vkDestroyShaderModule(device, fragment_shader_module, nullptr);
 	vkDestroyShaderModule(device, vertex_shader_module, nullptr);
 
+	std::vector<VkFramebuffer> swap_chain_frame_buffers(swap_chain_image_views.size());
+
+	for (size_t i = 0; i < swap_chain_image_views.size(); i++)
+	{
+		VkImageView attachments[] = {
+			swap_chain_image_views[i]
+		};
+
+		VkFramebufferCreateInfo framebuffer_specification{};
+		framebuffer_specification.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebuffer_specification.renderPass = render_pass;
+		framebuffer_specification.attachmentCount = 1;
+		framebuffer_specification.pAttachments = attachments;
+		framebuffer_specification.width = swap_chain_extent.width;
+		framebuffer_specification.height = swap_chain_extent.height;
+		framebuffer_specification.layers = 1;
+
+		if (vkCreateFramebuffer(device, &framebuffer_specification, nullptr, &swap_chain_frame_buffers[i]) != VK_SUCCESS)
+		{
+			std::cout << "failed to create framebuffer!" << std::endl;
+			return -1;
+		}
+	}
+
+
 
 
 	while (!glfwWindowShouldClose(window))
@@ -782,7 +807,9 @@ int main()
 			return -1;
 		}
 	}
-
+	
+	for (auto framebuffer : swap_chain_frame_buffers)
+		vkDestroyFramebuffer(device, framebuffer, nullptr);
 	vkDestroyPipeline(device, graphics_pipeline, nullptr);
 	vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
 	vkDestroyRenderPass(device, render_pass, nullptr);
