@@ -530,6 +530,42 @@ int main()
 		}
 	}
 
+	VkAttachmentDescription color_attachment{};
+	color_attachment.format = swap_chain_image_format;
+	color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+	VkAttachmentReference color_attachment_reference{};
+	color_attachment_reference.attachment = 0;
+	color_attachment_reference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	VkSubpassDescription subpass{};
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.colorAttachmentCount = 1;
+	subpass.pColorAttachments = &color_attachment_reference;
+
+	VkRenderPass render_pass;
+	VkPipelineLayout pipeline_layout;
+
+	VkRenderPassCreateInfo render_pass_info{};
+	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	render_pass_info.attachmentCount = 1;
+	render_pass_info.pAttachments = &color_attachment;
+	render_pass_info.subpassCount = 1;
+	render_pass_info.pSubpasses = &subpass;
+
+	if (vkCreateRenderPass(device, &render_pass_info, nullptr, &render_pass) != VK_SUCCESS)
+	{
+		std::cout << "failed to create render pass!" << std::endl;
+	}
+
+
+
 	std::ifstream vert_file("shaders/vert.spv", std::ios::ate | std::ios::binary);
 	if (!vert_file.is_open())
 	{
@@ -608,12 +644,12 @@ int main()
 	dynamic_state_specification.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
 	dynamic_state_specification.pDynamicStates = dynamic_states.data();
 
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertexInputInfo.vertexBindingDescriptionCount = 0;
-	vertexInputInfo.pVertexBindingDescriptions = nullptr;
-	vertexInputInfo.vertexAttributeDescriptionCount = 0;
-	vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+	VkPipelineVertexInputStateCreateInfo vertex_input_specification{};
+	vertex_input_specification.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	vertex_input_specification.vertexBindingDescriptionCount = 0;
+	vertex_input_specification.pVertexBindingDescriptions = nullptr;
+	vertex_input_specification.vertexAttributeDescriptionCount = 0;
+	vertex_input_specification.pVertexAttributeDescriptions = nullptr;
 
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_specification{};
 	input_assembly_specification.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -652,6 +688,15 @@ int main()
 	rasterizer.depthBiasClamp = 0.0f;
 	rasterizer.depthBiasSlopeFactor = 0.0f;
 
+	VkPipelineMultisampleStateCreateInfo multisampling_specification{};
+	multisampling_specification.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampling_specification.sampleShadingEnable = VK_FALSE;
+	multisampling_specification.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	multisampling_specification.minSampleShading = 1.0f;
+	multisampling_specification.pSampleMask = nullptr;
+	multisampling_specification.alphaToCoverageEnable = VK_FALSE;
+	multisampling_specification.alphaToOneEnable = VK_FALSE;
+
 	VkPipelineColorBlendAttachmentState color_blend_attachment_specification{};
 	color_blend_attachment_specification.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	color_blend_attachment_specification.blendEnable = VK_FALSE;
@@ -673,7 +718,6 @@ int main()
 	color_blend_specification.blendConstants[2] = 0.0f;
 	color_blend_specification.blendConstants[3] = 0.0f;
 
-	VkPipelineLayout pipeline_layout;
 	VkPipelineLayoutCreateInfo pipeline_layout_specification{};
 	pipeline_layout_specification.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipeline_layout_specification.setLayoutCount = 0;
@@ -684,6 +728,31 @@ int main()
 	if (vkCreatePipelineLayout(device, &pipeline_layout_specification, nullptr, &pipeline_layout) != VK_SUCCESS)
 	{
 		std::cout << "failed to create pipeline layout!" << std::endl;
+		return -1;
+	}
+
+	VkGraphicsPipelineCreateInfo pipeline_specification{};
+	pipeline_specification.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipeline_specification.stageCount = 2;
+	pipeline_specification.pStages = shader_stages;
+	pipeline_specification.pVertexInputState = &vertex_input_specification;
+	pipeline_specification.pInputAssemblyState = &input_assembly_specification;
+	pipeline_specification.pViewportState = &viewport_state_specification;
+	pipeline_specification.pRasterizationState = &rasterizer;
+	pipeline_specification.pMultisampleState = &multisampling_specification;
+	pipeline_specification.pDepthStencilState = nullptr;
+	pipeline_specification.pColorBlendState = &color_blend_specification;
+	pipeline_specification.pDynamicState = &dynamic_state_specification;
+	pipeline_specification.layout = pipeline_layout;
+	pipeline_specification.renderPass = render_pass;
+	pipeline_specification.subpass = 0;
+	pipeline_specification.basePipelineHandle = VK_NULL_HANDLE;
+	pipeline_specification.basePipelineIndex = -1;
+
+	VkPipeline graphics_pipeline;
+	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_specification, nullptr, &graphics_pipeline) != VK_SUCCESS)
+	{
+		std::cout << "failed to create graphics pipeline!" << std::endl;
 		return -1;
 	}
 
@@ -714,7 +783,9 @@ int main()
 		}
 	}
 
+	vkDestroyPipeline(device, graphics_pipeline, nullptr);
 	vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
+	vkDestroyRenderPass(device, render_pass, nullptr);
 	for (auto image_view : swap_chain_image_views)
 		vkDestroyImageView(device, image_view, nullptr);
 	vkDestroySwapchainKHR(device, swap_chain, nullptr);
